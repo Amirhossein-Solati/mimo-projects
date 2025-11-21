@@ -79,10 +79,39 @@ def code_G348(sym):
 # --- ML Detection Functions ---
 
 def myMLD_BPSK_SISO(r, H):
-    """ML Detector for SISO BPSK."""
-    sx = np.array([1, -1])
-    # Simplified detector: project received signal onto the channel vector
-    decision_metric = np.real(r * np.conj(H))
+    """
+    ML Detector for a SIMO/SISO system with BPSK modulation.
+    This implementation uses Maximal Ratio Combining (MRC) for the SIMO case.
+
+    Parameters
+    ----------
+    r : np.ndarray
+        The received signal vector/matrix, shape (N, M). For SIMO, (1, M).
+    H : np.ndarray
+        The channel vector/matrix, shape (N, M). For SIMO, (1, M).
+
+    Returns
+    -------
+    int
+        The detected BPSK symbol, either 1 or -1.
+    """
+    # 1. Perform Maximal Ratio Combining (MRC)
+    # This involves multiplying the received signal element-wise with the
+    # complex conjugate of the channel and then summing the results.
+    # This is equivalent to the dot product of r and the conjugate of H.
+    # r is (1, M), H is (1, M). We need the Hermitian product.
+    # H.conj().T gives the Hermitian transpose, shape (M, 1).
+    # r @ H.conj().T performs the matrix multiplication (1, M) @ (M, 1) -> (1, 1) scalar
+    
+    # A simpler way for vectors is using np.vdot for complex dot product
+    # np.vdot(H, r) calculates sum(H_i^* * r_i) which is exactly what we need.
+    combined_signal = np.vdot(H, r)
+    
+    # 2. Make the decision based on the real part of the combined signal.
+    # The result of vdot is a scalar complex number.
+    decision_metric = np.real(combined_signal)
+    
+    # 3. Return the detected symbol.
     return 1 if decision_metric > 0 else -1
 
 def myMLD_Alamouti_BPSK(r, H):
