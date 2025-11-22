@@ -1,13 +1,13 @@
 import numpy as np
-from generator_448 import code_G448 as g448
 
+from generator_448 import code_G448 as g448 
 
 def code_G348(sym):
     """
     Constructs the STBC matrix G348 for 3 transmit antennas.
 
     This code is derived by taking the first three columns of the G448 code matrix.
-    It's a rate-1 code that transmits 4 symbols over 4 time slots using 3 antennas.
+    It's a rate-1/2 code that transmits 4 symbols over 8 time slots using 3 antennas.
 
     Parameters
     ----------
@@ -18,15 +18,16 @@ def code_G348(sym):
     Returns
     -------
     np.ndarray
-        The 4x3 complex-valued STBC matrix for G348.
+        The 8x3 complex-valued STBC matrix for G348.
     """
-    # 1. Input validation for this function is implicitly handled by code_G448,
+    # 1. Input validation is implicitly handled by code_G448.
     symbols = np.asarray(sym)
 
-    # 2. Generate the full G448 code matrix.
+    # 2. Generate the full 8x4 G448 code matrix.
     g448_matrix = g448(symbols)
 
     # 3. Select the first three columns to form the G348 matrix.
+    # Input is (8, 4), output will be (8, 3).
     g348_matrix = g448_matrix[:, 0:3]
     
     return g348_matrix
@@ -40,9 +41,11 @@ if __name__ == '__main__':
     stbc_matrix = code_G348(qpsk_symbols)
     
     print("Input Symbols:\n", qpsk_symbols)
-    print("\nGenerated G348 Matrix (4x3):\n", stbc_matrix)
+    print("\nGenerated G348 Matrix (8x3):\n", stbc_matrix)
     
     # Verify the shape of the output matrix
     print("\nShape of the output matrix:", stbc_matrix.shape)
-    assert stbc_matrix.shape == (4, 3)
+    
+    assert stbc_matrix.shape == (8, 3)
+    
     print("Shape test passed!")
