@@ -9,7 +9,7 @@ from itertools import product
 
 # --- Modulation and Demodulation Functions ---
 
-def myMod_QPSK(x):
+def mod_qpsk(x):
     """Modulates a sequence of bits into QPSK symbols."""
     if np.size(x) % 2 != 0:
         raise ValueError("Input array must have an even number of bits.")
@@ -27,7 +27,7 @@ def myMod_QPSK(x):
         
     return symbols
 
-def myDemod_QPSK(x):
+def demod_qpsk(x):
     """Demodulates a sequence of QPSK symbols back into a stream of bits."""
     symbol_to_bit_map = {1: [0, 0], 1j: [0, 1], -1: [1, 1], -1j: [1, 0]}
     output_bits = []
@@ -45,7 +45,7 @@ def myDemod_QPSK(x):
 
 # --- STBC Encoding Functions ---
 
-def myAlamouti(x):
+def alamouti(x):
     """Constructs the 2x2 Alamouti STBC matrix."""
     if np.size(x) != 2:
         raise ValueError("Input for Alamouti must contain exactly 2 symbols.")
@@ -78,7 +78,7 @@ def code_G348(sym):
 
 # --- ML Detection Functions ---
 
-def myMLD_BPSK_SISO(r, H):
+def ml_bpsk_siso(r, H):
     """
     ML Detector for a SIMO/SISO system with BPSK modulation.
     This implementation uses Maximal Ratio Combining (MRC) for the SIMO case.
@@ -114,14 +114,14 @@ def myMLD_BPSK_SISO(r, H):
     # 3. Return the detected symbol.
     return 1 if decision_metric > 0 else -1
 
-def myMLD_Alamouti_BPSK(r, H):
+def ml_alamouti_bpsk(r, H):
     """ML Detector for Alamouti STBC with BPSK modulation."""
     sx = np.array([1, -1])
     possible_pairs = product(sx, repeat=2)
     min_cost = np.inf
     detected_symbols = None
     for pair in possible_pairs:
-        C = myAlamouti(np.array(pair))
+        C = alamouti(np.array(pair))
         cost = np.linalg.norm(r - (C @ H), 'fro')**2
         if cost < min_cost:
             min_cost = cost
@@ -142,18 +142,18 @@ def _generic_mld(r, H, code_func, constellation, num_symbols):
             detected_symbols = current_symbols
     return detected_symbols.reshape(num_symbols, 1)
 
-def myMLD_4_61_BPSK(r, H):
+def ml_4_61_bpsk(r, H):
     """ML Detector for code_4_61 with BPSK."""
     return _generic_mld(r, H, code_4_61, np.array([1, -1]), 4)
 
-def myMLD_4_38_BPSK(r, H):
+def ml_4_38_bpsk(r, H):
     """ML Detector for code_4_38 with BPSK."""
     return _generic_mld(r, H, code_4_38, np.array([1, -1]), 4)
 
-def myMLD_QPSK_G348(r, H):
+def ml_qpsk_G348(r, H):
     """ML Detector for G348 with QPSK."""
     return _generic_mld(r, H, code_G348, np.array([1, -1, 1j, -1j]), 4)
 
-def myMLD_QPSK_G448(r, H):
+def ml_qpsk_G448(r, H):
     """ML Detector for G448 with QPSK."""
     return _generic_mld(r, H, code_G448, np.array([1, -1, 1j, -1j]), 4)

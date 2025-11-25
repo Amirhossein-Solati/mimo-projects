@@ -1,7 +1,7 @@
 import numpy as np
 import os
 # Import all our custom functions from the stbc_functions.py file
-import stbc_functions as stbc
+import functions.stbc_functions as stbc
 
 # --- Simulation Parameters ---
 SNRdB = np.arange(5, 30.1, 5)
@@ -26,7 +26,7 @@ for i, snr_val in enumerate(SNR):
         H = np.sqrt(varh / 2) * (np.random.randn(N, M) + 1j * np.random.randn(N, M))
         n0 = np.sqrt(1 / 2) * (np.random.randn(1, M) + 1j * np.random.randn(1, M))
         r0 = np.sqrt(snr_val / N) * b1 * H + n0
-        ds_MLD = stbc.myMLD_BPSK_SISO(r0, H)
+        ds_MLD = stbc.ml_bpsk_siso(r0, H)
         if ds_MLD != b1:
             Err += 1
     Err1[i] = Err / Nb
@@ -41,12 +41,12 @@ for i, snr_val in enumerate(SNR):
     num_loops = int(Nb / N)
     for _ in range(num_loops):
         b1 = 2 * np.random.randint(0, 2, size=(N, 1)) - 1
-        C = stbc.myAlamouti(b1)
+        C = stbc.alamouti(b1)
         T = C.shape[0]
         H = np.sqrt(varh / 2) * (np.random.randn(N, M) + 1j * np.random.randn(N, M))
         n0 = np.sqrt(1 / 2) * (np.random.randn(T, M) + 1j * np.random.randn(T, M))
         r = np.sqrt(snr_val / N) * (C @ H) + n0
-        ds_MLD = stbc.myMLD_Alamouti_BPSK(r, H)
+        ds_MLD = stbc.ml_alamouti_bpsk(r, H)
         Err += np.sum(ds_MLD != b1)
     Err2[i] = Err / (num_loops * N)
     print(f"SNR (dB): {SNRdB[i]}, BER: {Err2[i]:.6f}")
@@ -65,7 +65,7 @@ for i, snr_val in enumerate(SNR):
         H = np.sqrt(varh / 2) * (np.random.randn(N, M) + 1j * np.random.randn(N, M))
         n0 = np.sqrt(1 / 2) * (np.random.randn(T, M) + 1j * np.random.randn(T, M))
         r = np.sqrt(snr_val / N) * (C @ H) + n0
-        ds_MLD = stbc.myMLD_4_61_BPSK(r, H)
+        ds_MLD = stbc.ml_4_61_bpsk(r, H)
         Err += np.sum(ds_MLD != b1)
     Err3[i] = Err / (num_loops * K)
     print(f"SNR (dB): {SNRdB[i]}, BER: {Err3[i]:.6f}")
@@ -84,7 +84,7 @@ for i, snr_val in enumerate(SNR):
         H = np.sqrt(varh / 2) * (np.random.randn(N, M) + 1j * np.random.randn(N, M))
         n0 = np.sqrt(1 / 2) * (np.random.randn(T, M) + 1j * np.random.randn(T, M))
         r = np.sqrt(snr_val / N) * (C @ H) + n0
-        ds_MLD = stbc.myMLD_4_38_BPSK(r, H)
+        ds_MLD = stbc.ml_4_38_bpsk(r, H)
         Err += np.sum(ds_MLD != b1)
     Err4[i] = Err / (num_loops * K)
     print(f"SNR (dB): {SNRdB[i]}, BER: {Err4[i]:.6f}")
@@ -99,14 +99,14 @@ for i, snr_val in enumerate(SNR):
     num_loops = int(Nb / bits_per_block)
     for _ in range(num_loops):
         b0 = np.random.randint(0, 2, size=(bits_per_block, 1))
-        b1 = stbc.myMod_QPSK(b0)
+        b1 = stbc.mod_qpsk(b0)
         C = stbc.code_G348(b1)
         T = C.shape[0]
         H = np.sqrt(varh / 2) * (np.random.randn(N, M) + 1j * np.random.randn(N, M))
         n0 = np.sqrt(1 / 2) * (np.random.randn(T, M) + 1j * np.random.randn(T, M))
         r = np.sqrt(snr_val / N) * (C @ H) + n0
-        ds_MLD = stbc.myMLD_QPSK_G348(r, H)
-        ds_MLD1 = stbc.myDemod_QPSK(ds_MLD)
+        ds_MLD = stbc.ml_qpsk_G348(r, H)
+        ds_MLD1 = stbc.demod_qpsk(ds_MLD)
         Err += np.sum(ds_MLD1 != b0)
     Err5[i] = Err / (num_loops * bits_per_block)
     print(f"SNR (dB): {SNRdB[i]}, BER: {Err5[i]:.6f}")
@@ -121,14 +121,14 @@ for i, snr_val in enumerate(SNR):
     num_loops = int(Nb / bits_per_block)
     for _ in range(num_loops):
         b0 = np.random.randint(0, 2, size=(bits_per_block, 1))
-        b1 = stbc.myMod_QPSK(b0)
+        b1 = stbc.mod_qpsk(b0)
         C = stbc.code_G448(b1)
         T = C.shape[0]
         H = np.sqrt(varh / 2) * (np.random.randn(N, M) + 1j * np.random.randn(N, M))
         n0 = np.sqrt(1 / 2) * (np.random.randn(T, M) + 1j * np.random.randn(T, M))
         r = np.sqrt(snr_val / N) * (C @ H) + n0
-        ds_MLD = stbc.myMLD_QPSK_G448(r, H)
-        ds_MLD1 = stbc.myDemod_QPSK(ds_MLD)
+        ds_MLD = stbc.ml_qpsk_G448(r, H)
+        ds_MLD1 = stbc.demod_qpsk(ds_MLD)
         Err += np.sum(ds_MLD1 != b0)
     Err6[i] = Err / (num_loops * bits_per_block)
     print(f"SNR (dB): {SNRdB[i]}, BER: {Err6[i]:.6f}")
