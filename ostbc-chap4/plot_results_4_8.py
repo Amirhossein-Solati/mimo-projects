@@ -30,7 +30,7 @@ else:
     plt.semilogy(SNRdB, Err2, 'gd-', label='2 Tx, 2 Rx (Alamouti, BPSK)')
     plt.semilogy(SNRdB, Err3, 'bv:', label='3 Tx, 2 Rx (Rate-1, BPSK)')
     plt.semilogy(SNRdB, Err4, 'k*--', label='4 Tx, 2 Rx (Rate-1, BPSK)')
-    plt.semilogy(SNRdB, Err5, 'c^-', label='3 Tx, 2 Rx (Rate-1, QPSK)')
+    plt.semilogy(SNRdB, Err5, 'c^-', label='3 Tx, 2 Rx (Rate-1/2, QPSK)')
     plt.semilogy(SNRdB, Err6, 'mo:', label='4 Tx, 2 Rx (Rate-1/2, QPSK)')
 
     # --- Formatting ---

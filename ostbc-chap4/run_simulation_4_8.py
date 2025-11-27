@@ -99,7 +99,7 @@ for i, snr_val in enumerate(SNR):
     num_loops = int(Nb / bits_per_block)
     for _ in range(num_loops):
         b0 = np.random.randint(0, 2, size=(bits_per_block, 1))
-        b1 = stbc.myMod_QPSK(b0)
+        b1 = stbc.mod_qpsk(b0)
         C = stbc.code_G348(b1)
         T = C.shape[0]
         H = np.sqrt(varh / 2) * (np.random.randn(N, M) + 1j * np.random.randn(N, M)) # H is now 3x2
@@ -121,7 +121,7 @@ for i, snr_val in enumerate(SNR):
     num_loops = int(Nb / bits_per_block)
     for _ in range(num_loops):
         b0 = np.random.randint(0, 2, size=(bits_per_block, 1))
-        b1 = stbc.myMod_QPSK(b0)
+        b1 = stbc.mod_qpsk(b0)
         C = stbc.code_G448(b1)
         T = C.shape[0]
         H = np.sqrt(varh / 2) * (np.random.randn(N, M) + 1j * np.random.randn(N, M)) # H is now 4x2
